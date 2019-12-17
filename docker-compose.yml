@@ -105,19 +105,22 @@ services:
                     - mongo-inventory
                     - mongo-useradm
 
-    mender-conductor:
-        image: mendersoftware/mender-conductor:master
-        depends_on:
-            - mender-elasticsearch
-            - mender-redis
+    mender-elasticsearch:
+        environment:
+            - ES_NETWORK_HOST=0.0.0.0
+            - ES_JAVA_OPTS=-Xms512m -Xmx2048m
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.8.5
         extends:
             file: common.yml
             service: mender-base
         networks:
             - mender
 
-    mender-elasticsearch:
-        image: elasticsearch:5-alpine
+    mender-conductor:
+        image: mendersoftware/mender-conductor:2.11.0-es6-force-gitlab-use-f-new-image
+        depends_on:
+            - mender-elasticsearch
+            - mender-redis
         extends:
             file: common.yml
             service: mender-base
